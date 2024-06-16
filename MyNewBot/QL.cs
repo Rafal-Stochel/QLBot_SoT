@@ -140,14 +140,6 @@ public class QL
         SimpleCardMove card_move = (SimpleCardMove)move;
 
         key[0] = (int)card_move.Card.CommonId;
-        
-        // using (var sw = new StreamWriter(FilePaths.error_file, append: true))
-        // {
-        //     sw.WriteLine("GetQTableKey");
-        //     sw.WriteLine("move = " + move.ToString());
-        //     sw.WriteLine("common id = " + (int)card_move.Card.CommonId);
-        //     sw.WriteLine(DateTime.Now + "\n");
-        // }
 
         Stage[] stages = TransfromGameStateToStages(seeded_game_state);
         key[1] = (int)stages[0];
@@ -182,20 +174,7 @@ public class QL
                              + learning_rate * (RewardAfterApplyMove(seeded_game_state, move)
                                                 + discount_factor * MaxQValueFromNewState(key));
 
-        // using (var sw = new StreamWriter(FilePaths.error_file, append: true))
-        // {
-        //     sw.WriteLine("move = " + move.ToString());
-        //     sw.WriteLine("create key = " + string.Join(", ", key));
-        //     sw.WriteLine("created value = " + new_q_value.ToString());
-        //     sw.WriteLine("old value = " + q_table[(key[0], key[1], key[2], key[3])].ToString());
-        //     sw.WriteLine(DateTime.Now + "\n");
-        // }
         q_table[(key[0], key[1], key[2], key[3])] = new_q_value;
-        // using (var sw = new StreamWriter(FilePaths.error_file, append: true))
-        // {
-        //     sw.WriteLine("new value = " + q_table[(key[0], key[1], key[2], key[3])].ToString());
-        //     sw.WriteLine(DateTime.Now + "\n");
-        // }
     }
 
     // Pick best by value move or explore other move
@@ -238,18 +217,7 @@ public class QL
         {
             if (random.NextDouble() < exploration_chance)
             {
-                // using (var sw = new StreamWriter(FilePaths.error_file, append: true))
-                // {
-                //     sw.WriteLine("picked\n");
-                // }
                 return item.Value;
-            }
-            else
-            {
-                // using (var sw = new StreamWriter(FilePaths.error_file, append: true))
-                // {
-                //     sw.WriteLine("didnt pick move = " + item.Value.ToString() + "\n");
-                // }
             }
         }
 

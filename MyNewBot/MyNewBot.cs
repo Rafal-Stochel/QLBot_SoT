@@ -54,11 +54,6 @@ public class MyNewBot : AI
         else if (buy_moves.Count() != 0)
         {
             best_move = ql.PickBuyMove(seeded_game_sate, buy_moves);
-            // using (var sw = new StreamWriter(FilePaths.error_file, append: true))
-            // {
-            //     sw.WriteLine("got from PickBuyMove, move = " + best_move.ToString());
-            //     sw.WriteLine(DateTime.Now + "\n");
-            // }
             ql.CalculateNewQValue(seeded_game_sate, best_move);
         }
         else
