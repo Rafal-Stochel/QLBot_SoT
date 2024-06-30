@@ -8,7 +8,6 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Bots;
 
@@ -36,10 +35,10 @@ public class QL
 
     public QL()
     {
-        using (var sw = new StreamWriter(FilePaths.errorFile, append: false))
+        using (var sw = new StreamWriter(FilePaths.errorFile, append: true))
         {
             sw.WriteLine("Start of game");
-            sw.WriteLine(DateTime.Now + "\n");
+            sw.WriteLine(DateTime.Now + "\n\n");
         }
 
         using (var sw = new StreamWriter(FilePaths.tmpFile, append: false))
@@ -61,9 +60,13 @@ public class QL
                 string key_value_str = String.Join("", raw_line.Split('(', ')', ' '));
                 string[] key_value_arr = key_value_str.Split(':');
                 int[] dict_keys = key_value_arr[0].Split(',').Select(int.Parse).ToArray();
-                double dict_value = double.Parse(key_value_arr[1], System.Globalization.CultureInfo.InvariantCulture);
+                double dict_value = double.Parse(key_value_arr[1].Replace(',', '.'), System.Globalization.CultureInfo.InvariantCulture);
 
                 qTable.Add(Tuple.Create(dict_keys[0], dict_keys[1], dict_keys[2], dict_keys[3]), dict_value);
+                if (dict_value > 1000)
+                {
+                    WriteLineToErrorFile($"str = {key_value_arr[1].Replace(',', '.')}, double = {dict_value}");
+                }
             }
         }
     }
@@ -79,6 +82,14 @@ public class QL
         }
     }
 
+    public void WriteLineToErrorFile(string msg)
+    {
+        using (var sw = new StreamWriter(FilePaths.errorFile, append: true))
+        {
+            sw.WriteLine(msg);
+        }
+    }
+
     public void WriteLineToTmpFile(string msg)
     {
         using (var sw = new StreamWriter(FilePaths.tmpFile, append: true))
@@ -89,7 +100,7 @@ public class QL
 
     public double TryToGetQValue(qkey key)
     {
-        double q_value;
+        double q_value = 0.0;
         if (qTable.TryGetValue(key, out q_value))
         {
             return q_value;
@@ -181,6 +192,8 @@ public class QL
         for (int i = 0; i < Consts.numberOfAllCards; ++i)
         {
             double new_value = TryToGetQValue(Tuple.Create(i, key.Item2, key.Item3, key.Item4));
+            WriteLineToTmpFile($"{i}, {key.Item2}, {key.Item3}, {key.Item4}");
+            WriteLineToTmpFile($"new_value = {new_value}");
             if (new_value > result)
             {
                 result = new_value;
@@ -196,9 +209,16 @@ public class QL
 
         double q_value = TryToGetQValue(key);
 
+        WriteLineToTmpFile($"old q_value = {q_value}");
+        WriteLineToTmpFile($"(1.0 - learningRate) * q_value = {(1.0 - learningRate) * q_value}");
+        WriteLineToTmpFile($"RewardAfterApplyMove = {RewardAfterApplyMove(seeded_game_state, move)}");
+        WriteLineToTmpFile($"MaxQValueFromNewState = {MaxQValueFromNewState(key)}");
+
         double new_q_value = (1.0 - learningRate) * q_value
                             + learningRate * (RewardAfterApplyMove(seeded_game_state, move)
                                                 + discountFactor * MaxQValueFromNewState(key));
+
+        WriteLineToTmpFile($"result = {new_q_value}\n");
 
         qTable[key] = new_q_value;
     }
@@ -209,7 +229,7 @@ public class QL
     {
         Random random = new Random();
         
-        WriteLineToTmpFile("buy moves count = " + buy_moves.Count.ToString());
+        // WriteLineToTmpFile("buy moves count = " + buy_moves.Count.ToString());
 
         List<Tuple<int, double>> moves_values = new List<Tuple<int, double>>();
         for (int i = 0; i < buy_moves.Count; ++i)
@@ -222,10 +242,10 @@ public class QL
         // Sort in descending order
         moves_values.Sort((x, y) => y.Item2.CompareTo(x.Item2));
 
-        foreach (var item in moves_values)
-        {
-            WriteLineToTmpFile(item.Item1 + " , " + buy_moves[item.Item1] + " , " + item.Item2);
-        }
+        // foreach (var item in moves_values)
+        // {
+        //     WriteLineToTmpFile(item.Item1 + " , " + buy_moves[item.Item1] + " , " + item.Item2);
+        // }
 
         Move result = buy_moves[moves_values.Last().Item1];
         var card_move = (SimpleCardMove)result;
@@ -239,7 +259,7 @@ public class QL
             }
         }
 
-        WriteLineToTmpFile("didnt pick any pickbuymove, return last");
+        // WriteLineToTmpFile("didnt pick any pickbuymove, return last");
         return result;
     }
 }

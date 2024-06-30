@@ -35,14 +35,14 @@ public class MyNewBot : AI
         var simple_moves = possibleMoves.Where(m => m.Command != CommandEnum.BUY_CARD && m.Command != CommandEnum.END_TURN).ToList();
         // var simple_moves = possibleMoves.Where(m => m.Command != CommandEnum.END_TURN).ToList();
 
-        ql.WriteLineToTmpFile("Possible moves count = " + possibleMoves.Count.ToString());
+        // ql.WriteLineToTmpFile("Possible moves count = " + possibleMoves.Count.ToString());
 
         Move best_move = possibleMoves[0];
         int best_value = 0;
 
         if (simple_moves.Count() != 0)
         {
-            ql.WriteLineToTmpFile("Start simple moves check");
+            // ql.WriteLineToTmpFile("Start simple moves check");
 
             foreach (var move in simple_moves)
             {
@@ -54,20 +54,20 @@ public class MyNewBot : AI
                 }
             }
 
-            ql.WriteLineToTmpFile("End simple moves check");
+            // ql.WriteLineToTmpFile("End simple moves check");
         }
         else if (buy_moves.Count() != 0)
         {
-            ql.WriteLineToTmpFile("Start buy moves check");
+            // ql.WriteLineToTmpFile("Start buy moves check");
 
             best_move = ql.PickBuyMove(seeded_game_sate, buy_moves);
             ql.CalculateNewQValue(seeded_game_sate, best_move);
 
-            ql.WriteLineToTmpFile("End buy moves check");
+            // ql.WriteLineToTmpFile("End buy moves check");
         }
         else
         {
-            ql.WriteLineToTmpFile("end turn?");
+            // ql.WriteLineToTmpFile("end turn?");
             return Move.EndTurn();
         }
 
