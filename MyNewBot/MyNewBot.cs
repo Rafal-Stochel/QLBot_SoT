@@ -35,12 +35,15 @@ public class MyNewBot : AI
         var simple_moves = possibleMoves.Where(m => m.Command != CommandEnum.BUY_CARD && m.Command != CommandEnum.END_TURN).ToList();
         // var simple_moves = possibleMoves.Where(m => m.Command != CommandEnum.END_TURN).ToList();
 
+        ql.WriteLineToTmpFile("Possible moves count = " + possibleMoves.Count.ToString());
+
         Move best_move = possibleMoves[0];
         int best_value = 0;
 
-
         if (simple_moves.Count() != 0)
         {
+            ql.WriteLineToTmpFile("Start simple moves check");
+
             foreach (var move in simple_moves)
             {
                 int result = ql.RewardAfterApplyMove(seeded_game_sate, move);
@@ -50,16 +53,21 @@ public class MyNewBot : AI
                     best_value = result;
                 }
             }
+
+            ql.WriteLineToTmpFile("End simple moves check");
         }
         else if (buy_moves.Count() != 0)
         {
+            ql.WriteLineToTmpFile("Start buy moves check");
+
             best_move = ql.PickBuyMove(seeded_game_sate, buy_moves);
             ql.CalculateNewQValue(seeded_game_sate, best_move);
+
+            ql.WriteLineToTmpFile("End buy moves check");
         }
         else
         {
-            Log("end move = " + best_move.ToString());
-            Log("~~~~END~~~~\n");
+            ql.WriteLineToTmpFile("end turn?");
             return Move.EndTurn();
         }
 
@@ -72,8 +80,6 @@ public class MyNewBot : AI
     public override void GameEnd(EndGameState state, FullGameState? final_board_state)
     {
         ql.ResetComboCounters();
-
-        ql.LogTMPStuff();
 
         ql.SaveQTableToFile();
     }

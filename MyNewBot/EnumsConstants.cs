@@ -14,17 +14,17 @@ namespace Bots;
 public class FilePaths
 {
     private static string dir = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.Parent.FullName;
-    private static string bots_path = dir + @"\Bots\src\MyNewBot\";
-    public static string qtable_path = bots_path + "QTABLE.txt";
-    public static string tmp_file = bots_path + "tmp_file.txt";
-    public static string error_file = bots_path + "error_file.txt";
+    private static string botsPath = dir + @"\Bots\src\MyNewBot\";
+    public static string qTablePath = botsPath + "QTABLE.txt";
+    public static string tmpFile = botsPath + "tmp_file.txt";
+    public static string errorFile = botsPath + "error_file.txt";
 }
 
 public class Consts
 {
     public const int numberOfAllCards = 113;
-    public const int stageRange = 4;
-    public const int combosRange = 4;
+    public const int maxStage = 3;
+    public const int maxCombo = 3;
 
     // how big this should be in terms of QTable values?
     public const int infinityReward = 100;
